@@ -133,8 +133,26 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'password' => 'required',
+                'min:8', // Contraseña mínima de 8 caracteres
+                'confirmed', // Confirmación de la contraseña
+                'regex:/[a-z]/', // Al menos una letra minúscula
+                'regex:/[A-Z]/', // Al menos una letra mayúscula
+                'regex:/[0-9]/', // Al menos un número
+                'regex:/[@$!%*?&#]/', // Al menos un carácter especial,
+            'g-recaptcha-response' => 'required' // Validar que el reCAPTCHA se haya enviado
         ]);
+        // Validar reCAPTCHA con Google
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => env('RECAPTCHA_SECRET_KEY'),
+            'response' => $request->input('g-recaptcha-response')
+        ]);
+
+        $result = $response->json();
+
+        if (!$result['success']) {
+            return back()->withErrors(['captcha' => 'Verificación de reCAPTCHA fallida.']);
+        }
            
         $data = $request->all();
         $user = $this->create($data);

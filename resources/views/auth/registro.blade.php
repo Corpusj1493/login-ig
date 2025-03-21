@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,6 +61,13 @@
                     <div class="form-floating mb-3">
                       <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" value="" placeholder="Password" required>
                       <label for="password" class="form-label">{{ __('Contraseña') }}</label>
+                      <ul class="list-unstyled mt-2">
+                          <li id="length" class="text-danger">❌ Mínimo 8 caracteres</li>
+                          <li id="lowercase" class="text-danger">❌ Al menos una letra minúscula</li>
+                          <li id="uppercase" class="text-danger">❌ Al menos una letra mayúscula</li>
+                          <li id="number" class="text-danger">❌ Al menos un número</li>
+                          <li id="special" class="text-danger">❌ Al menos un carácter especial (@$!%*?&#)</li>
+                      </ul>
                     </div>
                     @error('password')
                         <span class="text-danger" role="alert">
@@ -78,6 +86,7 @@
                         </span>
                     @enderror
                   </div>
+                  <div class="g-recaptcha mb-4" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
                   <div class="col-12">
                     <div class="d-grid my-3">
                       <button class="btn btn-primary btn-lg" type="submit">{{ __('Registrarse') }}</button>
@@ -94,6 +103,26 @@
     </div>
   </div>
 </section>
+<!-- Script para validación en tiempo real -->
+<script>
+    document.getElementById('password').addEventListener('input', function () {
+        let password = this.value;
+        
+        document.getElementById('length').className = password.length >= 8 ? 'text-success' : 'text-danger';
+        document.getElementById('length').innerHTML = password.length >= 8 ? '✅ Mínimo 8 caracteres' : '❌ Mínimo 8 caracteres';
 
+        document.getElementById('lowercase').className = /[a-z]/.test(password) ? 'text-success' : 'text-danger';
+        document.getElementById('lowercase').innerHTML = /[a-z]/.test(password) ? '✅ Al menos una letra minúscula' : '❌ Al menos una letra minúscula';
+
+        document.getElementById('uppercase').className = /[A-Z]/.test(password) ? 'text-success' : 'text-danger';
+        document.getElementById('uppercase').innerHTML = /[A-Z]/.test(password) ? '✅ Al menos una letra mayúscula' : '❌ Al menos una letra mayúscula';
+
+        document.getElementById('number').className = /[0-9]/.test(password) ? 'text-success' : 'text-danger';
+        document.getElementById('number').innerHTML = /[0-9]/.test(password) ? '✅ Al menos un número' : '❌ Al menos un número';
+
+        document.getElementById('special').className = /[@$!%*?&#]/.test(password) ? 'text-success' : 'text-danger';
+        document.getElementById('special').innerHTML = /[@$!%*?&#]/.test(password) ? '✅ Al menos un carácter especial (@$!%*?&#)' : '❌ Al menos un carácter especial (@$!%*?&#)';
+    });
+</script>
 </body>
 </html>
