@@ -205,35 +205,10 @@ class AuthController extends Controller
 
     public function sendOtp($user)
     {
-        /*Mail::raw("Tu codigo de verificacion es: {$user->otp}", function ($message) use ($user){
-           $message->to($user->email)
-                ->subject('codigo de verificacion'); 
-        });*/
         $email = new Pruebas($user->otp);
         Mail::to($user->email)->send($email);
     }
-    /*public function verifyOtp(Request $request)
-    {
-        $request->validate(['otp' => 'required|numeric']);
-
-        $user = Auth::user();
-        // Verificar si el usuario es una instancia de User
-        if (!$user instanceof User) {
-            return redirect()->route('login')->withErrors('Error al autenticar.');
-        }
-
-        if ($user->otp == $request->otp && Carbon::now()->lessThan($user->otp_expires_at)) {
-            $user->otp = null;
-            $user->otp_expires_at = null;
-            $user->save();
-
-            session(['2fa' => true]);
-            //return redirect()->route('dashboard');
-            return redirect("dashboard")->withSuccess('hola');
-        }
-
-        return back()->withErrors('Código incorrecto o expirado.');
-    }*/
+      
     public function verifyOtp(Request $request)
     {
         $request->validate([
